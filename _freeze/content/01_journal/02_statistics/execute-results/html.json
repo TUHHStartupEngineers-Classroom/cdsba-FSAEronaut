@@ -1,0 +1,18 @@
+{
+  "hash": "b8906367da8538c7b45f49a0db386f25",
+  "result": {
+    "markdown": "---\ntitle: \"Statistical Concepts\"\nauthor: \"Lucas Rousselange\"\nexecute:\n  echo: false\n  warning: false\nnumber-sections: false\n---\n\n\n# Task 1\n\n::: {.cell hash='02_statistics_cache/html/unnamed-chunk-1_07b92dee806522f25490cb32c809f3e7'}\n\n:::\n\n\n|Variable|Age|Income|\n|--------|---|------|\n|Expected value|33.5|3510.7|\n|Variance|340.6|8.6256458\\times 10^{6}|\n|Standard deviation|18.5|2936.9|\n\n\n# Task 2\n\n\n::: {.cell hash='02_statistics_cache/html/unnamed-chunk-2_c0b9a5d5237a43dd378579e2dcba7ab9'}\n\n:::\n\nDepending on the goal it might make sense to compare both standard deviation relative to their mean, also known as the *Coefficient of Variation* (CV). This is possible as both variables are absolute and it might inform us of possible data analysis steps we can take. But, in general, it does not really make sense to compare the standard deviation of both distributions directly as they do not have the same unit, i.e. they represent completely different variables. \n\n\n# Task 3 \n\n\n::: {.cell hash='02_statistics_cache/html/unnamed-chunk-3_35aaaf2e98dbf87ffbc84d352c303b98'}\n\n:::\n\n* Covariance: 2.97001\\times 10^{4}\n* Correlation: 0.55 \n\n# Task 4\nThe pearson correlation coefficient is much easier to interpret, as it is a dimensionless value that has a predefined interval $[-1,1]$. This makes it possible to compare the strength of different relationships via the correlation coefficient.\n\n*Note: The pearson correlation coefficient is sensitive to outlier and is best used with the assumption of normality. Other correlations, such as Spearman or Kendall, are more robust when the data is not normaly distributed.* \n\n# Task 5\n\n\n::: {.cell hash='02_statistics_cache/html/unnamed-chunk-4_5b0b72eae2170f10dadcfaf7376b7a41'}\n\n:::\n\nAge group|[0,18]|[18,65[|[65,$\\infty$[|\n|--------|--------------|-------|-------------|\n|$E[income]$|391.22|4743.23|1604.19|\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {
+      "include-in-header": [
+        "<link href=\"../../site_libs/pagedtable-1.1/css/pagedtable.css\" rel=\"stylesheet\" />\r\n<script src=\"../../site_libs/pagedtable-1.1/js/pagedtable.js\"></script>\r\n"
+      ]
+    },
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

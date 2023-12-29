@@ -1,7 +1,66 @@
 ---
 title: "Statistical Concepts"
+author: "Lucas Rousselange"
+execute:
+  echo: false
+  warning: false
+number-sections: false
 ---
 
-::: callout-note
-You can delete everything in here and start fresh.
-:::
+# Task 1
+```{r}
+options(scipen = 999)
+random_vars <- readRDS("../../../Causal_Data_Science_Data/random_vars.rds")
+age <- random_vars$age
+inc <- random_vars$income
+age_m <- mean(age)
+inc_m <- mean(inc)
+age_v <- var(age)
+inc_v <- var(inc)
+age_sd <- sd(age)
+inc_sd <- sd(inc)
+rd <- 1
+```
+
+|Variable|Age|Income|
+|--------|---|------|
+|Expected value|`r round(age_m,rd)`|`r round(inc_m,rd)`|
+|Variance|`r round(age_v,rd)`|`r round(inc_v,rd)`|
+|Standard deviation|`r round(age_sd,rd)`|`r round(inc_sd,rd)`|
+
+
+# Task 2
+
+```{r}
+#age_sd/age_m*100
+#inc_sd/inc_m*100
+```
+Depending on the goal it might make sense to compare both standard deviation relative to their mean, also known as the *Coefficient of Variation* (CV). This is possible as both variables are absolute and it might inform us of possible data analysis steps we can take. But, in general, it does not really make sense to compare the standard deviation of both distributions directly as they do not have the same unit, i.e. they represent completely different variables. 
+
+
+# Task 3 
+
+```{r}
+cov_age_inc <- cov(age,inc)
+cor_age_inc <- cor(age,inc)
+```
+* Covariance: `r round(cov_age_inc,1)`
+* Correlation: `r round(cor_age_inc,2)` 
+
+# Task 4
+The pearson correlation coefficient is much easier to interpret, as it is a dimensionless value that has a predefined interval $[-1,1]$. This makes it possible to compare the strength of different relationships via the correlation coefficient.
+
+*Note: The pearson correlation coefficient is sensitive to outlier and is best used with the assumption of normality. Other correlations, such as Spearman or Kendall, are more robust when the data is not normaly distributed.* 
+
+# Task 5
+
+```{r}
+library(dplyr)
+under_age <- filter(random_vars,age > 0 & age <= 18)
+active <- filter(random_vars, age > 18 & age <=65)
+retired <- filter(random_vars, age > 65)
+```
+Age group|[0,18]|[18,65[|[65,$\infty$[|
+|--------|--------------|-------|-------------|
+|$E[income]$|`r round(mean(under_age$income),2)`|`r round(mean(active$income),2)`|`r round(mean(retired$income),2)`|
+

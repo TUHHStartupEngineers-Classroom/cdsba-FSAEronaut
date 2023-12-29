@@ -6,5 +6,5 @@ author: "Lucas Rousselange"
 
 ![](assets/logo/TIE_logo.svg){width=80% fig-align="center"}
 
-This is the Lab Journal of Lucas Rousselage for the CDSfBA course in the WiSe2024.  
-<i> <pre>[Status]: [ 10%]</pre> </i>
+This is the Lab Journal of Lucas Rousselange for the CDSfBA course in the WiSe2024.  
+<i> <pre>[Status]: [ 20%]</pre> </i>

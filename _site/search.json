@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "My Lab Journal",
     "section": "",
-    "text": "This is the Lab Journal of Lucas Rousselage for the CDSfBA course in the WiSe2024.\n\n[Status]: [ 10%]"
+    "text": "This is the Lab Journal of Lucas Rousselange for the CDSfBA course in the WiSe2024.\n\n[Status]: [ 20%]"
   },
   {
     "objectID": "content/01_journal/09_iv.html",
@@ -60,7 +60,7 @@
     "href": "content/01_journal/02_statistics.html",
     "title": "Statistical Concepts",
     "section": "",
-    "text": "Note\n\n\n\nYou can delete everything in here and start fresh."
+    "text": "Task 1\n\n\n\nVariable\nAge\nIncome\n\n\n\n\nExpected value\n33.5\n3510.7\n\n\nVariance\n340.6\n8.6256458^{6}\n\n\nStandard deviation\n18.5\n2936.9\n\n\n\n\n\nTask 2\nDepending on the goal it might make sense to compare both standard deviation relative to their mean, also known as the Coefficient of Variation (CV). This is possible as both variables are absolute and it might inform us of possible data analysis steps we can take. But, in general, it does not really make sense to compare the standard deviation of both distributions directly as they do not have the same unit, i.e. they represent completely different variables.\n\n\nTask 3\n\nCovariance: 2.97001^{4}\nCorrelation: 0.55\n\n\n\nTask 4\nThe pearson correlation coefficient is much easier to interpret, as it is a dimensionless value that has a predefined interval \\([-1,1]\\). This makes it possible to compare the strength of different relationships via the correlation coefficient.\nNote: The pearson correlation coefficient is sensitive to outlier and is best used with the assumption of normality. Other correlations, such as Spearman or Kendall, are more robust when the data is not normaly distributed.\n\n\nTask 5\n\n\n\nAge group\n[0,18]\n[18,65[\n[65,\\(\\infty\\)[\n\n\n\n\n\\(E[income]\\)\n391.22\n4743.23\n1604.19"
   },
   {
     "objectID": "content/01_journal/04_causality.html",
