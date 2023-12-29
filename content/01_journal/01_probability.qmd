@@ -1,97 +1,83 @@
 ---
 title: "Probability Theory"
+author: "Lucas Rousselange"
+execute:
+  echo: false
+number-sections: false
 ---
 
-::: callout-note
-You can delete everything in here and start fresh.
-:::
-
-This is a `.qmd` file. It is plain text with special features. Any time you write just like this, it will be compiled to normal text in the website. If you put a \# in front of your text, it will create a top level-header.
-
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
-
-# Text Formatting
-
-*italics* and **bold**
-
-superscript^2^ / subscript~2~
-
-~~strikethrough~~
-
-`verbatim code`
-
-> Blockquote
-
-# Headings
-
-## Header 2
-### Header 3
-#### Header 4
-##### Header 5
-###### Header 6
-
-# Links & Images
-
-<https://quarto.org>
-
-[Quarto](https://quarto.org)
-
-![Caption](../../assets/img/elephant.png)
-
-[![Caption](../../assets/img/elephant.png)](https://quarto.org)
-
-[![Caption](../../assets/img/elephant.png)](https://quarto.org "An elephant")
-
-
-# Lists
-
-* unordered list
-    + sub-item 1
-    + sub-item 2
-        - sub-sub-item 1
-        
-*   item 2
-
-    Continued (indent 4 spaces)
-    
-    
-1. ordered list
-2. item 2
-    i) sub-item 1
-         A.  sub-sub-item 1
-         
-(@)  A list whose numbering
-
-continues after
-
-(@)  an interruption
-
-# Tables
-
-| Right | Left | Default | Center |
-|------:|:-----|---------|:------:|
-|   12  |  12  |    12   |    12  |
-|  123  |  123 |   123   |   123  |
-|    1  |    1 |     1   |     1  |
-
-# Source Code
-
-Use ``` to delimit blocks of source code:
-
-```
-code
-```
-
-Add a language to syntax highlight code blocks:
+# Assignement 1
 
 ```{r}
-1 + 1
+P_S <- 0.3 
+P_nS <- 1-P_S
+P_ST <- 0.2 
+P_SnT <- 1-P_ST
+P_nST <- 0.6
+P_nSnT <- 1-P_nST 
+
+P_S_T <- P_S*P_ST
+P_nS_T <- P_nS*P_nST
+P_S_nT <- P_S*P_SnT
+P_nS_nT <- P_nS*P_nSnT
+
 ```
+## Given probabilities
+* $P(S) = `r P_S`$
+  + $P(T \mid S) = `r P_ST`$
+  + $P(\overline{T} \mid S) = `r P_SnT`$
+* $P(\overline{S}) = `r P_nS`$
+  + $P(T \mid \overline{S}) = `r P_nST`$
+  + $P(\overline{T} \mid \overline{S}) = `r P_nSnT`$
+
+## Answer
+### Probabilities
+$$ 
+\begin{split}
+P(T \cap S) = P(S) * P(T \mid S) =`r P_S`*`r P_ST`=`r P_S_T`,\\
+P(T \cap \overline{S}) = P(\overline{S}) * P(T \mid \overline{S}) =`r P_nS`*`r P_nST`=`r P_nS_T`,\\
+P(\overline{T} \cap S) = P(S) * P(\overline{T} \mid S) =`r P_S`*`r P_SnT`=`r P_S_nT`,\\
+P(\overline{T} \cap \overline{S}) = P(\overline{S}) * P(\overline{T} \mid \overline{S}) =`r P_nS`*`r P_nSnT`=`r P_nS_nT`. 
+\end{split}
+$$
+
+### Sum of all probabilities: 
+$$
+P(T \cap S ) + P(T \cap \overline{S}) + P(\overline{T} \cap S) + P(\overline{T} \cap \overline{S})
+= `r P_S_T+P_nS_T+P_S_nT+P_nS_nT`
+$$
+
+# Assignement 2
+
+Q: What is the percentage of customers using all three device?  
+A: $0.5 \%$
+
+
+Q: What is the percentage of customers using at least two devices?  
+A: $`r 7.3+3.3+8.8` \%$
+
+Q: What is the percentage of customers using only one device?  
+A: $`r 27.8+10+42.3` \%$
+
+# Assignement 3
 
 ```{r}
-cars
+P_B_A <- 0.97   #True positive rate
+P_B_nA <- 0.01  #False positive rate
+P_A <- 0.04     #Faulty product rate
+P_nA <- 1-P_A   #Flawless product rate
+
+P_B <- P_B_A*P_A+P_B_nA*P_nA #Total alarm trigger rate
+P_A_B <- (P_B_A*P_A)/P_B #Faulty product rate when alarm triggered 
+P_nA_B <- (P_B_nA*P_nA)/P_B #Flawless product rate when alarm triggered (1-P_A_B)
 ```
 
-```{r}
-plot(cars)
-```
+$$
+\begin{split}
+P(\overline{A} \mid B) = \frac{P(B \mid \overline{A})*P(\overline{A})}{P(B)}
+= \frac{`r P_B_nA` * `r P_nA`}{`r P_B`} = `r round(P_nA_B, 3)`, \\
+P(A \mid B) = 1 - P(\overline{A} \mid B) = 1-`r round(P_nA_B, 3)` = `r round(P_A_B, 3)`.
+\end{split}
+$$
+
+*These results show that in case the alarm is triggered, there is a possibility of about **`r round(P_nA_B*100, 1)`%** that the product is **flawless** and a probability of **`r round(P_A_B*100, 1)`%** that the product is **faulty**.*
