@@ -1,7 +1,130 @@
 ---
 title: "Directed Acyclic Graphs"
+author: "Lucas Rousselange"
+execute:
+  echo: false
+  warning: false
+number-sections: false
 ---
 
-::: callout-note
-You can delete everything in here and start fresh.
-:::
+# Task 1
+The DAG for the store parking spot example only contains two nodes:
+
+* $D$: Parking spots (Treatment variable)
+* $Y$: Sales (Outcome variable)
+
+```{r}
+library(dagitty)
+library(ggdag)
+library(ggplot2)
+dag_model <- 'dag {
+D [exposure,pos="0.075,0.4"]
+Y [outcome,pos="0.4,0.4"]
+D -> Y
+}'
+# draw DAG
+p <- ggdag_status(dag_model) +
+  guides(fill = "none", color = "none") +  # Disable the legend
+  geom_dag_edges(edge_color = "black")+
+  theme_dag_blank()
+p
+
+```
+
+# Task 2
+```{r}
+library(jtools)
+customer_sat <- readRDS("../../../Causal_Data_Science_Data/customer_sat.rds")
+lm_sat <- lm(satisfaction ~ follow_ups, data=customer_sat)
+lm_sat_mod <- lm(satisfaction ~ ., data=customer_sat)
+f_R <- sprintf("%0.2f",coef(lm_sat)[2])
+f_R_mod <- sprintf("%0.2f",coef(lm_sat_mod)[2])
+export_summs(lm_sat, lm_sat_mod)
+```
+
+# Task 3 
+## Comparison
+Comparing both models, we can see that our model which accounts for subscriptions has a much better accuracy than the one that does not.A coefficient reversal takes place when changing models. For our follow-up only model, the follow-up correlation coefficient is $R =`r f_R`$, while it changes to $R =`r f_R_mod`$ when subscrition model is taken into account.
+
+### Follow-up only 
+```{r}
+effect_plot(lm_sat, follow_ups, interval = TRUE, plot.points = TRUE)
+```
+
+### Follow-up & Subscrition
+```{r}
+effect_plot(lm_sat_mod, follow_ups, interval = TRUE, plot.points = TRUE)
+```
+## Explanation 
+A possible explanation is that the subscription is a confounding factor. Another possible explanation is that the subscription is a collision factor. The most probable explanation is that the subscription is a confounding factor, as the follow-up calls rise and the satisfaction falls with increasing subscription level. Users who use the software the most and the most features (Elite) encounter more problems and need more follow-up calls. This in turn reduces their satisfaction. 
+
+```{r}
+# Confounder
+confounding <- dagify(
+  X ~ Z,
+  Y ~ Z,
+  Y ~ X,
+  coords = list(x = c(Y = 3, Z = 2, X = 1),
+                y = c(Y = 0, Z = 1, X = 0)),
+  labels = list(X = "follow-ups",
+                Y = "satisfaction",
+                Z = "subscription")
+  )
+
+# Plot DAG
+library(dagitty)
+library(ggdag)
+library(ggplot2)
+p <- ggdag(confounding) +
+  geom_dag_point(color = "#15c1d4") +
+  geom_dag_text(color = "white") +
+  geom_dag_edges(edge_color = "black") +
+  geom_dag_label_repel(aes(label = label))+
+  theme_dag_blank()
+p
+```
+
+### Effect of subscription category on satisfaction
+```{r}
+effect_plot(lm_sat_mod, subscription, interval = TRUE, plot.points = TRUE , 
+            jitter = 0.1)
+```
+### Effect of subscription category on follow-up
+```{r}
+lm_sub<-lm(follow_ups ~ subscription, data=customer_sat)
+effect_plot(lm_sub, subscription, interval = TRUE, plot.points = TRUE , 
+            jitter = 0.1)
+```
+
+# Task 4 
+Here we can clearly see that the satisfaction actually increases for each group with more follow-ups.
+
+```{r}
+library(gridExtra)
+# Not conditioning on education
+simps_not_cond <- ggplot(customer_sat, aes(x = follow_ups, y = satisfaction)) +
+  geom_point(alpha = .8) +
+  stat_smooth(method = "lm", se = F)+
+  theme_apa()
+
+# Conditioning on education  
+simps_cond <- ggplot(customer_sat, aes(x = follow_ups, y = satisfaction, color = subscription)) +
+  geom_point(alpha = .8) +
+  stat_smooth(method = "lm", se = F) +
+  theme_apa()+
+  theme(legend.position = "bottom")
+
+# Plot both plots
+#grid.arrange(simps_not_cond, simps_cond, nrow=1)
+```
+
+## Not conditioned 
+```{r} 
+simps_not_cond
+```
+
+## Conditioned 
+```{r} 
+simps_cond
+```
+
