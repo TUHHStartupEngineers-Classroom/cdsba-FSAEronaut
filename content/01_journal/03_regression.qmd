@@ -1,7 +1,100 @@
 ---
 title: "Regression and Statistical Inference"
+author: "Lucas Rousselange"
+execute:
+  echo: false
+  warning: false
+number-sections: false
 ---
 
-::: callout-note
-You can delete everything in here and start fresh.
-:::
+# Task 1
+
+```{r}
+car_prices <- readRDS("../../../Causal_Data_Science_Data/car_prices.rds")
+```
+
+Using the *Environement* pane in RStudio, we can see that the data has 181 rows and 22 columns.
+
+# Task 2
+
+```{r}
+library(pillar)
+glimpse(car_prices,width=79)
+```
+Using the *glimpse()* function form the *Pillar* package, we can see that all the strings are of type `<chr>`, while all numeric values are of type `<dbl>`, which means double precision floating point.
+
+# Task 3
+
+Looking at the summary of the linear regression model with the following command
+
+```{r}
+#| eval: false
+#| echo: true
+lm_all <- lm(price ~ ., data = car_prices)
+summary(lm_all)
+```
+we can see that the variable shown below have a significant impact on the car price: 
+
+* Stroke
+* Peak RPM 
+* Engine Size 
+* Car width 
+* Car body (hardtop, hatchback, wagon)
+* Engine location (rear) 
+* Engine type (ohc, ohcv)
+* Cylinder number (four, five, six, twelve)
+
+
+Including all the above cited significant variables via the following command:
+```{r}
+#| eval: false
+#| echo: true
+lm <- lm(price ~ stroke + peakrpm + enginesize + carwidth
+          + carbody + enginelocation + enginetype  + cylindernumber,
+         data = car_prices)
+summary(lm)
+```
+
+```{r}
+library(jtools)
+lm_all <- lm(price ~ ., data = car_prices)
+lm <- lm(price ~ stroke + peakrpm + enginesize + carwidth
+          + carbody + enginelocation + enginetype  + cylindernumber,
+         data = car_prices)
+
+lm_R2 <- summary(lm)$adj.r.squared
+lm_R2 <- sprintf("%0.2f",lm_R2)
+lm_all_R2 <- summary(lm_all)$adj.r.squared
+lm_all_R2 <- sprintf("%0.2f",lm_all_R2)
+```
+
+we get an adjusted $R^2 = `r  lm_R2`$. The previous adjusted $R^2$ of our model 
+containing all variables was $R^2 = `r  lm_all_R2`$. We lost a bit in prediction accuracy but also reduced the model complexity significantly. A detailed comparison is shwn below:
+
+```{r}
+export_summs(lm,lm_all, scale = TRUE)
+```
+
+# Task 4 
+Chosen regressor: *enginesize*
+
+1. The engine size is of type `<dbl>` and can take on values between `r min(car_prices$enginesize)` and
+`r max(car_prices$enginesize)` 
+2. The engine size has a positive influence on the price, i.e. a higher engine size, is correlated with a higher car price.
+3. The effect is significant ($p<0.001$)
+
+```{r}
+ep <- effect_plot(lm, pred = enginesize, interval = TRUE, plot.points = TRUE, 
+            jitter = 0.05)  
+ep + theme_apa()
+```
+
+# Task 5 
+As we can see below, the OLS method is not able to compute a linear regression coefficient for our newline define variable. This is due to the fact that all out entries for this variable are the same, which results in variance that is exactly equal to $0$. The OLS method uses the variance of the independent variable as denominator and is therefore not able to determine a corresponding linear regression.
+
+```{r}
+library(dplyr)
+car_sh <-  car_prices %>% mutate(seat_heating  = TRUE)
+sh_lm <- lm(price ~ seat_heating, data = car_sh)
+summ(sh_lm)
+```
