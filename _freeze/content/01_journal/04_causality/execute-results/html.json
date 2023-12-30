@@ -1,0 +1,18 @@
+{
+  "hash": "7a2aaab93999e56e592adad7609c5310",
+  "result": {
+    "markdown": "---\ntitle: \"Causality\"\nauthor: \"Lucas Rousselange\"\nexecute:\n  echo: false\n  warning: false\nnumber-sections: false\n---\n\n\n# Of beauty and tomatoes \n\nBelow you can see the correlation between the import value of tomatoes in Germany and the number of cosmetic surgeries world wide. \n\n## Cosmetic surgeries and tomato import value\n\n::: {.cell hash='04_causality_cache/html/unnamed-chunk-1_b3e206948b37194798fbc85d36b1876f'}\n::: {.cell-output-display}\n![](04_causality_files/figure-html/unnamed-chunk-1-1.png){width=672}\n:::\n:::\n\n## Correlation\n\n::: {.cell hash='04_causality_cache/html/unnamed-chunk-2_51f1303000ab9941c229b2c7151b302f'}\n\n:::\n\nAs you can imagine their is no causal link between the two. Nerveless, there is a significant correlation between both variables. The Pearson correlation coefficient is $R = 0.80$. Both samples are normaly distributed.\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {
+      "include-in-header": [
+        "<link href=\"../../site_libs/pagedtable-1.1/css/pagedtable.css\" rel=\"stylesheet\" />\r\n<script src=\"../../site_libs/pagedtable-1.1/js/pagedtable.js\"></script>\r\n"
+      ]
+    },
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

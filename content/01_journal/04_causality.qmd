@@ -1,7 +1,38 @@
 ---
 title: "Causality"
+author: "Lucas Rousselange"
+execute:
+  echo: false
+  warning: false
+number-sections: false
 ---
 
-::: callout-note
-You can delete everything in here and start fresh.
-:::
+# Of beauty and tomatoes 
+
+Below you can see the correlation between the import value of tomatoes in Germany and the number of cosmetic surgeries world wide. 
+
+## Cosmetic surgeries and tomato import value
+```{r}
+
+library(ggplot2)
+library(jtools)
+AB <- read.csv("../../../Causal_Data_Science_Data/AB.csv")
+scale <- 0.55
+y_str2 <-'Tomato import in Germany [100k€]'
+y_str1 <- 'Cosmetic surgeries world wide'
+p <- ggplot(AB, aes(x=Jahr, y=OP)) +
+  geom_line(aes(color = y_str1)) +
+  geom_line(aes(y = Wert/scale,  color = y_str2)) +
+  scale_y_continuous(sec.axis = sec_axis(~.*scale, name=y_str2)) +
+  labs(x = "Year", y = y_str1 )
+p + theme_apa() + theme(legend.position="bottom")
+
+```
+## Correlation
+```{r}
+fit <- lm(AB$OP ~ AB$Wert)
+fit_R2 <- cor(AB$OP, AB$Wert)
+fit_R2 <- sprintf("%0.2f",fit_R2)
+```
+As you can imagine their is no causal link between the two. Nerveless, there is a significant correlation between both variables. The Pearson correlation coefficient is $R = `r fit_R2`$. Both samples are normaly distributed.
+
