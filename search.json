@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "My Lab Journal",
     "section": "",
-    "text": "This is the Lab Journal of Lucas Rousselange for the CDSfBA course in the WiSe2024.\n\n[Status]: [ 40%]"
+    "text": "This is the Lab Journal of Lucas Rousselange for the CDSfBA course in the WiSe2024.\n\n[Status]: [ 50%]"
   },
   {
     "objectID": "content/01_journal/09_iv.html",
@@ -25,7 +25,35 @@
     "href": "content/01_journal/05_dag.html",
     "title": "Directed Acyclic Graphs",
     "section": "",
-    "text": "Note\n\n\n\nYou can delete everything in here and start fresh."
+    "text": "The DAG for the store parking spot example only contains two nodes:\n\n\\(D\\): Parking spots (Treatment variable)\n\\(Y\\): Sales (Outcome variable)"
+  },
+  {
+    "objectID": "content/01_journal/05_dag.html#comparison",
+    "href": "content/01_journal/05_dag.html#comparison",
+    "title": "Directed Acyclic Graphs",
+    "section": "Comparison",
+    "text": "Comparison\nComparing both models, we can see that our model which accounts for subscriptions has a much better accuracy than the one that does not.A coefficient reversal takes place when changing models. For our follow-up only model, the follow-up correlation coefficient is \\(R =-3.31\\), while it changes to \\(R =2.19\\) when subscrition model is taken into account.\n\nFollow-up only\n\n\n\n\n\n\n\n\n\n\n\nFollow-up & Subscrition"
+  },
+  {
+    "objectID": "content/01_journal/05_dag.html#explanation",
+    "href": "content/01_journal/05_dag.html#explanation",
+    "title": "Directed Acyclic Graphs",
+    "section": "Explanation",
+    "text": "Explanation\nA possible explanation is that the subscription is a confounding factor. Another possible explanation is that the subscription is a collision factor. The most probable explanation is that the subscription is a confounding factor, as the follow-up calls rise and the satisfaction falls with increasing subscription level. Users who use the software the most and the most features (Elite) encounter more problems and need more follow-up calls. This in turn reduces their satisfaction.\n\n\n\n\n\n\n\n\n\n\nEffect of subscription category on satisfaction\n\n\n\n\n\n\n\n\n\n\n\nEffect of subscription category on follow-up"
+  },
+  {
+    "objectID": "content/01_journal/05_dag.html#not-conditioned",
+    "href": "content/01_journal/05_dag.html#not-conditioned",
+    "title": "Directed Acyclic Graphs",
+    "section": "Not conditioned",
+    "text": "Not conditioned"
+  },
+  {
+    "objectID": "content/01_journal/05_dag.html#conditioned",
+    "href": "content/01_journal/05_dag.html#conditioned",
+    "title": "Directed Acyclic Graphs",
+    "section": "Conditioned",
+    "text": "Conditioned"
   },
   {
     "objectID": "content/01_journal/03_regression.html",
