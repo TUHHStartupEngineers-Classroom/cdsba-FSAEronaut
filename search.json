@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "My Lab Journal",
     "section": "",
-    "text": "This is the Lab Journal of Lucas Rousselange for the CDSfBA course in the WiSe2024.\n\n[Status]: [ 30%]"
+    "text": "This is the Lab Journal of Lucas Rousselange for the CDSfBA course in the WiSe2024.\n\n[Status]: [ 40%]"
   },
   {
     "objectID": "content/01_journal/09_iv.html",
@@ -67,7 +67,14 @@
     "href": "content/01_journal/04_causality.html",
     "title": "Causality",
     "section": "",
-    "text": "Note\n\n\n\nYou can delete everything in here and start fresh."
+    "text": "Below you can see the correlation between the import value of tomatoes in Germany and the number of cosmetic surgeries world wide.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nAs you can imagine their is no causal link between the two. Nerveless, there is a significant correlation between both variables. The Pearson correlation coefficient is \\(R = 0.80\\). Both samples are normaly distributed."
+  },
+  {
+    "objectID": "content/01_journal/04_causality.html#correlation",
+    "href": "content/01_journal/04_causality.html#correlation",
+    "title": "Causality",
+    "section": "",
+    "text": "As you can imagine their is no causal link between the two. Nerveless, there is a significant correlation between both variables. The Pearson correlation coefficient is \\(R = 0.80\\). Both samples are normaly distributed."
   },
   {
     "objectID": "content/01_journal/06_rct.html",
