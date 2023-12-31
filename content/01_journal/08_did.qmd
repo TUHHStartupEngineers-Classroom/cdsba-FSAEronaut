@@ -1,7 +1,65 @@
 ---
 title: "Difference-in-Differences"
+author: "Lucas Rousselange"
+execute:
+  warning: false
+format:
+  html:
+    code-fold: true
+number-sections: false
 ---
 
-::: callout-note
-You can delete everything in here and start fresh.
-:::
+```{r}
+#Load data set and libraries
+library(ggplot2)
+library(jtools)
+library(kableExtra)
+library(dplyr)
+hospdd <- readRDS("../../../Causal_Data_Science_Data/hospdd.rds")
+```
+
+# Task 1
+
+```{r}
+# Before treatment
+ctrl_satis_before <- hospdd %>%
+  filter(month <4, procedure == 0) %>% 
+  pull(satis)
+ctrl_satis_before <- mean(ctrl_satis_before)
+csb <- sprintf("%0.2f",ctrl_satis_before)
+
+trmt_satis_before <- hospdd %>%
+  filter(month <4, procedure == 0) %>% 
+  pull(satis)
+trmt_satis_before <- mean(trmt_satis_before)
+tsb <- sprintf("%0.2f",trmt_satis_before)
+
+
+
+# After treatment
+ctrl_satis_after <- hospdd %>%
+  filter(month >=4, procedure == 0) %>% 
+  pull(satis)
+ctrl_satis_after <- mean(ctrl_satis_after)
+csa <- sprintf("%0.2f",ctrl_satis_after)
+
+
+trmt_satis_after <- hospdd %>%
+  filter(month >=4, procedure == 0) %>% 
+  pull(satis)
+trmt_satis_after <- mean(trmt_satis_after)
+tsa <- sprintf("%0.2f",trmt_satis_after)
+
+```
+The satisfaction in the groups were as follows:
+
+|Group| Ctrl - Before| Trmt - Before| Ctrl - After| Trmt - After|
+|-|-|-|-|-|
+|Satisfaction|`r csb`|`r tsb`|`r csa`|`r tsa`|
+
+# Task 2 
+we want to include month and hospital as variable and not as factor to be able to see an overall trend. 
+
+```{r}
+summ(lm(satis ~ procedure*(month + hospital), data = hospdd))
+```

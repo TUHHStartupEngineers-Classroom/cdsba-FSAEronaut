@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -193,6 +227,22 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="task-1" class="level1">
 <h1>Task 1</h1>
+<div class="cell" data-hash="02_statistics_cache/html/unnamed-chunk-1_ded442b20cc9e9026ffc4c30bb6cb32b">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">options</span>(<span class="at">scipen =</span> <span class="dv">999</span>)</span>
+<span id="cb1-2"><a href="#cb1-2"></a>random_vars <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"../../../Causal_Data_Science_Data/random_vars.rds"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3"></a>age <span class="ot">&lt;-</span> random_vars<span class="sc">$</span>age</span>
+<span id="cb1-4"><a href="#cb1-4"></a>inc <span class="ot">&lt;-</span> random_vars<span class="sc">$</span>income</span>
+<span id="cb1-5"><a href="#cb1-5"></a>age_m <span class="ot">&lt;-</span> <span class="fu">mean</span>(age)</span>
+<span id="cb1-6"><a href="#cb1-6"></a>inc_m <span class="ot">&lt;-</span> <span class="fu">mean</span>(inc)</span>
+<span id="cb1-7"><a href="#cb1-7"></a>age_v <span class="ot">&lt;-</span> <span class="fu">var</span>(age)</span>
+<span id="cb1-8"><a href="#cb1-8"></a>inc_v <span class="ot">&lt;-</span> <span class="fu">var</span>(inc)</span>
+<span id="cb1-9"><a href="#cb1-9"></a>age_sd <span class="ot">&lt;-</span> <span class="fu">sd</span>(age)</span>
+<span id="cb1-10"><a href="#cb1-10"></a>inc_sd <span class="ot">&lt;-</span> <span class="fu">sd</span>(inc)</span>
+<span id="cb1-11"><a href="#cb1-11"></a>rd <span class="ot">&lt;-</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 <table class="table">
 <thead>
 <tr class="header">
@@ -210,7 +260,7 @@ ul.task-list li input[type="checkbox"] {
 <tr class="even">
 <td>Variance</td>
 <td>340.6</td>
-<td>8.6256458^{6}</td>
+<td>8625645.8</td>
 </tr>
 <tr class="odd">
 <td>Standard deviation</td>
@@ -222,12 +272,26 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="task-2" class="level1">
 <h1>Task 2</h1>
+<div class="cell" data-hash="02_statistics_cache/html/unnamed-chunk-2_0a8606abc4962a1af0a904d7f3406671">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">#age_sd/age_m*100</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="co">#inc_sd/inc_m*100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 <p>Depending on the goal it might make sense to compare both standard deviation relative to their mean, also known as the <em>Coefficient of Variation</em> (CV). This is possible as both variables are absolute and it might inform us of possible data analysis steps we can take. But, in general, it does not really make sense to compare the standard deviation of both distributions directly as they do not have the same unit, i.e.&nbsp;they represent completely different variables.</p>
 </section>
 <section id="task-3" class="level1">
 <h1>Task 3</h1>
+<div class="cell" data-hash="02_statistics_cache/html/unnamed-chunk-3_21e0bde9f6d4975c5b3c35df7666af80">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>cov_age_inc <span class="ot">&lt;-</span> <span class="fu">cov</span>(age,inc)</span>
+<span id="cb3-2"><a href="#cb3-2"></a>cor_age_inc <span class="ot">&lt;-</span> <span class="fu">cor</span>(age,inc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 <ul>
-<li>Covariance: 2.97001^{4}</li>
+<li>Covariance: 29700.1</li>
 <li>Correlation: 0.55</li>
 </ul>
 </section>
@@ -238,6 +302,15 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="task-5" class="level1">
 <h1>Task 5</h1>
+<div class="cell" data-hash="02_statistics_cache/html/unnamed-chunk-4_4087ba5ba49a03f721df860a31f895b6">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb4-2"><a href="#cb4-2"></a>under_age <span class="ot">&lt;-</span> <span class="fu">filter</span>(random_vars,age <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span> age <span class="sc">&lt;=</span> <span class="dv">18</span>)</span>
+<span id="cb4-3"><a href="#cb4-3"></a>active <span class="ot">&lt;-</span> <span class="fu">filter</span>(random_vars, age <span class="sc">&gt;</span> <span class="dv">18</span> <span class="sc">&amp;</span> age <span class="sc">&lt;=</span><span class="dv">65</span>)</span>
+<span id="cb4-4"><a href="#cb4-4"></a>retired <span class="ot">&lt;-</span> <span class="fu">filter</span>(random_vars, age <span class="sc">&gt;</span> <span class="dv">65</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 <table class="table">
 <thead>
 <tr class="header">

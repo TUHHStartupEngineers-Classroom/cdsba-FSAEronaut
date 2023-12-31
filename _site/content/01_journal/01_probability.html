@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -195,6 +229,22 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="assignement-1" class="level1">
 <h1>Assignement 1</h1>
+<div class="cell" data-hash="01_probability_cache/html/unnamed-chunk-1_320f3397875d1d8b10b51cb0cc796e78">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>P_S <span class="ot">&lt;-</span> <span class="fl">0.3</span> </span>
+<span id="cb1-2"><a href="#cb1-2"></a>P_nS <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">-</span>P_S</span>
+<span id="cb1-3"><a href="#cb1-3"></a>P_ST <span class="ot">&lt;-</span> <span class="fl">0.2</span> </span>
+<span id="cb1-4"><a href="#cb1-4"></a>P_SnT <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">-</span>P_ST</span>
+<span id="cb1-5"><a href="#cb1-5"></a>P_nST <span class="ot">&lt;-</span> <span class="fl">0.6</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>P_nSnT <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">-</span>P_nST </span>
+<span id="cb1-7"><a href="#cb1-7"></a></span>
+<span id="cb1-8"><a href="#cb1-8"></a>P_S_T <span class="ot">&lt;-</span> P_S<span class="sc">*</span>P_ST</span>
+<span id="cb1-9"><a href="#cb1-9"></a>P_nS_T <span class="ot">&lt;-</span> P_nS<span class="sc">*</span>P_nST</span>
+<span id="cb1-10"><a href="#cb1-10"></a>P_S_nT <span class="ot">&lt;-</span> P_S<span class="sc">*</span>P_SnT</span>
+<span id="cb1-11"><a href="#cb1-11"></a>P_nS_nT <span class="ot">&lt;-</span> P_nS<span class="sc">*</span>P_nSnT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 <section id="given-probabilities" class="level2">
 <h2 class="anchored" data-anchor-id="given-probabilities">Given probabilities</h2>
 <ul>
@@ -243,6 +293,19 @@ A: <span class="math inline">\(80.1 \%\)</span></p>
 </section>
 <section id="assignement-3" class="level1">
 <h1>Assignement 3</h1>
+<div class="cell" data-hash="01_probability_cache/html/unnamed-chunk-2_ad0922488038871686483d8779e6c961">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>P_B_A <span class="ot">&lt;-</span> <span class="fl">0.97</span>   <span class="co">#True positive rate</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>P_B_nA <span class="ot">&lt;-</span> <span class="fl">0.01</span>  <span class="co">#False positive rate</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>P_A <span class="ot">&lt;-</span> <span class="fl">0.04</span>     <span class="co">#Faulty product rate</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>P_nA <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">-</span>P_A   <span class="co">#Flawless product rate</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a></span>
+<span id="cb2-6"><a href="#cb2-6"></a>P_B <span class="ot">&lt;-</span> P_B_A<span class="sc">*</span>P_A<span class="sc">+</span>P_B_nA<span class="sc">*</span>P_nA <span class="co">#Total alarm trigger rate</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>P_A_B <span class="ot">&lt;-</span> (P_B_A<span class="sc">*</span>P_A)<span class="sc">/</span>P_B <span class="co">#Faulty product rate when alarm triggered </span></span>
+<span id="cb2-8"><a href="#cb2-8"></a>P_nA_B <span class="ot">&lt;-</span> (P_B_nA<span class="sc">*</span>P_nA)<span class="sc">/</span>P_B <span class="co">#Flawless product rate when alarm triggered (1-P_A_B)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
 <p><span class="math display">\[
 \begin{split}
 P(\overline{A} \mid B) = \frac{P(B \mid \overline{A})*P(\overline{A})}{P(B)}

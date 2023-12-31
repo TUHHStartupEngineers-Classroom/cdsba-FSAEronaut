@@ -2,8 +2,10 @@
 title: "Causality"
 author: "Lucas Rousselange"
 execute:
-  echo: false
   warning: false
+format:
+  html:
+    code-fold: true
 number-sections: false
 ---
 
