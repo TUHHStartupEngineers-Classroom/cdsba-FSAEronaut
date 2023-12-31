@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Oliver Mork">
+<meta name="author" content="Lucas Rousselange">
 
 <title>MyLabJournal - Matching and Subclassification</title>
 <style>
@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -43,6 +77,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -63,6 +100,11 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+
+<script src="../../site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="../../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+<link href="../../site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="../../site_libs/pagedtable-1.1/js/pagedtable.js"></script>
 
 
 </head>
@@ -148,7 +190,25 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#task-1" id="toc-task-1" class="nav-link active" data-scroll-target="#task-1">Task 1</a>
+  <ul class="collapse">
+  <li><a href="#exploring-the-relationships" id="toc-exploring-the-relationships" class="nav-link" data-scroll-target="#exploring-the-relationships">Exploring the relationships</a></li>
+  <li><a href="#dag" id="toc-dag" class="nav-link" data-scroll-target="#dag">DAG</a></li>
+  </ul></li>
+  <li><a href="#task-2" id="toc-task-2" class="nav-link" data-scroll-target="#task-2">Task 2</a></li>
+  <li><a href="#task-3" id="toc-task-3" class="nav-link" data-scroll-target="#task-3">Task 3</a>
+  <ul class="collapse">
+  <li><a href="#coarsened-exact-matching" id="toc-coarsened-exact-matching" class="nav-link" data-scroll-target="#coarsened-exact-matching">(Coarsened) Exact Matching:</a></li>
+  <li><a href="#nearest-neighbor-matching" id="toc-nearest-neighbor-matching" class="nav-link" data-scroll-target="#nearest-neighbor-matching">Nearest-Neighbor Matching:</a></li>
+  <li><a href="#inverse-probability-weighting" id="toc-inverse-probability-weighting" class="nav-link" data-scroll-target="#inverse-probability-weighting">Inverse Probability Weighting:</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -165,7 +225,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Author</div>
     <div class="quarto-title-meta-contents">
-             <p>Oliver Mork </p>
+             <p>Lucas Rousselange </p>
           </div>
   </div>
     
@@ -176,21 +236,663 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
+<div class="cell" data-hash="07_matching_cache/html/unnamed-chunk-1_e0d4ef3e422fbda0cc280eedce3ee09f">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">#Load data set and libraries</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">library</span>(RColorBrewer)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">library</span>(dagitty)</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="fu">library</span>(ggdag)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="fu">library</span>(jtools)</span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="fu">library</span>(MatchIt)</span>
+<span id="cb1-10"><a href="#cb1-10"></a>membership <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"../../../Causal_Data_Science_Data/membership.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
-<div class="callout-title-container flex-fill">
-Note
+<section id="task-1" class="level1">
+<h1>Task 1</h1>
+<section id="exploring-the-relationships" class="level2">
+<h2 class="anchored" data-anchor-id="exploring-the-relationships">Exploring the relationships</h2>
+<p>Plotting a heat map for the available factors, there seems to be a high correlation between age, average purchase and pre membership average purchase.The pre membership average purchase, age and membership card also seem correlated. The sex seems to not have a big influence on either variable.</p>
+<div class="cell" data-hash="07_matching_cache/html/unnamed-chunk-2_688189f4270608b2f5bb5ec0b4dda764">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>mem_cor <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">cor</span>(membership))</span>
+<span id="cb2-2"><a href="#cb2-2"></a>mem_heat <span class="ot">&lt;-</span> mem_cor <span class="sc">%&gt;%</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="fu">rownames_to_column</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">gather</span>(colname, value, <span class="sc">-</span>rowname)</span>
+<span id="cb2-5"><a href="#cb2-5"></a></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="fu">ggplot</span>(mem_heat, <span class="fu">aes</span>(<span class="at">x=</span>colname,<span class="at">y=</span>rowname, <span class="at">fill=</span>value)) <span class="sc">+</span> </span>
+<span id="cb2-7"><a href="#cb2-7"></a>  <span class="fu">geom_tile</span>(<span class="at">color=</span><span class="st">'black'</span>)<span class="sc">+</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"white"</span>, <span class="at">high =</span> <span class="st">'blue4'</span>)<span class="sc">+</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">round</span>(value,<span class="dv">2</span>)), <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">''</span>, <span class="at">y=</span><span class="st">''</span>, <span class="at">title =</span> <span class="st">'Heatmap correlation between variables'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="07_matching_files/figure-html/unnamed-chunk-2-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="07_matching_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></a></p>
+</figure>
 </div>
 </div>
-<div class="callout-body-container callout-body">
-<p>You can delete everything in here and start fresh.</p>
+</div>
+</section>
+<section id="dag" class="level2">
+<h2 class="anchored" data-anchor-id="dag">DAG</h2>
+<div class="cell" data-hash="07_matching_cache/html/unnamed-chunk-3_c5119bdf885c005ad5801ed49e8ab443">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Confounder</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>confounding <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
+<span id="cb3-3"><a href="#cb3-3"></a>  X <span class="sc">~</span> Z1,</span>
+<span id="cb3-4"><a href="#cb3-4"></a>  Y <span class="sc">~</span> Z1,</span>
+<span id="cb3-5"><a href="#cb3-5"></a>  Y <span class="sc">~</span> X,</span>
+<span id="cb3-6"><a href="#cb3-6"></a>  X <span class="sc">~</span> Z2,</span>
+<span id="cb3-7"><a href="#cb3-7"></a>  Y <span class="sc">~</span> Z2,</span>
+<span id="cb3-8"><a href="#cb3-8"></a>  Z2 <span class="sc">~</span> Z1,</span>
+<span id="cb3-9"><a href="#cb3-9"></a>  <span class="at">coords =</span> <span class="fu">list</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="at">Y =</span> <span class="dv">3</span>, <span class="at">Z1 =</span> <span class="dv">1</span>, <span class="at">X =</span> <span class="dv">1</span>, <span class="at">Z2=</span><span class="dv">3</span>),</span>
+<span id="cb3-10"><a href="#cb3-10"></a>                <span class="at">y =</span> <span class="fu">c</span>(<span class="at">Y =</span> <span class="dv">0</span>, <span class="at">Z1 =</span> <span class="dv">1</span>, <span class="at">X =</span> <span class="dv">0</span>, <span class="at">Z2 =</span><span class="dv">1</span>)),</span>
+<span id="cb3-11"><a href="#cb3-11"></a>  <span class="at">labels =</span> <span class="fu">list</span>(<span class="at">Z2 =</span> <span class="st">"pre_avg_purch"</span>,</span>
+<span id="cb3-12"><a href="#cb3-12"></a>                <span class="at">Y =</span> <span class="st">"avg_purch"</span>,</span>
+<span id="cb3-13"><a href="#cb3-13"></a>                <span class="at">Z1 =</span> <span class="st">"age"</span>,</span>
+<span id="cb3-14"><a href="#cb3-14"></a>                <span class="at">X=</span> <span class="st">'card'</span>)</span>
+<span id="cb3-15"><a href="#cb3-15"></a>  )</span>
+<span id="cb3-16"><a href="#cb3-16"></a></span>
+<span id="cb3-17"><a href="#cb3-17"></a></span>
+<span id="cb3-18"><a href="#cb3-18"></a>p <span class="ot">&lt;-</span> <span class="fu">ggdag</span>(confounding) <span class="sc">+</span></span>
+<span id="cb3-19"><a href="#cb3-19"></a>  <span class="fu">geom_dag_point</span>(<span class="at">color =</span> <span class="st">"#15c1d4"</span>) <span class="sc">+</span></span>
+<span id="cb3-20"><a href="#cb3-20"></a>  <span class="fu">geom_dag_text</span>(<span class="at">color =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb3-21"><a href="#cb3-21"></a>  <span class="fu">geom_dag_edges</span>(<span class="at">edge_color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb3-22"><a href="#cb3-22"></a>  <span class="fu">geom_dag_label_repel</span>(<span class="fu">aes</span>(<span class="at">label =</span> label))<span class="sc">+</span></span>
+<span id="cb3-23"><a href="#cb3-23"></a>  <span class="fu">theme_dag_blank</span>()</span>
+<span id="cb3-24"><a href="#cb3-24"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="07_matching_files/figure-html/unnamed-chunk-3-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="07_matching_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></a></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="task-2" class="level1">
+<h1>Task 2</h1>
+<p>Naive model:</p>
+<div class="cell" data-hash="07_matching_cache/html/unnamed-chunk-4_863dedd5cc33dfed26fd27dccc5141a8">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>lm_naive <span class="ot">&lt;-</span> <span class="fu">lm</span>(avg_purch <span class="sc">~</span> card, <span class="at">data =</span> membership)</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">summ</span>(lm_naive)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Observations</td>
+<td style="text-align: right;">10000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Dependent variable</td>
+<td style="text-align: right;">avg_purch</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Type</td>
+<td style="text-align: right;">OLS linear regression</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">F(1,9998)</td>
+<td style="text-align: right;">1711.91</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">R²</td>
+<td style="text-align: right;">0.15</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Adj. R²</td>
+<td style="text-align: right;">0.15</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Est.</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">S.E.</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">t val.</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">(Intercept)</td>
+<td style="text-align: right;">65.94</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">166.29</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">card</td>
+<td style="text-align: right;">25.22</td>
+<td style="text-align: right;">0.61</td>
+<td style="text-align: right;">41.38</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+</tbody><tfoot>
+<tr class="odd">
+<td style="text-align: left; padding: 0;"><sup></sup> Standard errors: OLS</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+</tfoot>
+
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="task-3" class="level1">
+<h1>Task 3</h1>
+<section id="coarsened-exact-matching" class="level2">
+<h2 class="anchored" data-anchor-id="coarsened-exact-matching">(Coarsened) Exact Matching:</h2>
+<div class="cell" data-hash="07_matching_cache/html/unnamed-chunk-5_8adc58a6634f57271d552b6a278dc7ec">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>cem <span class="ot">&lt;-</span> <span class="fu">matchit</span>(card <span class="sc">~</span> age <span class="sc">+</span> pre_avg_purch,</span>
+<span id="cb5-2"><a href="#cb5-2"></a>               <span class="at">data =</span> membership, </span>
+<span id="cb5-3"><a href="#cb5-3"></a>               <span class="at">method =</span> <span class="st">'cem'</span>, </span>
+<span id="cb5-4"><a href="#cb5-4"></a>               <span class="at">estimand =</span> <span class="st">'ATE'</span>)</span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="fu">summary</span>(cem)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; 
+#&gt; Call:
+#&gt; matchit(formula = card ~ age + pre_avg_purch, data = membership, 
+#&gt;     method = "cem", estimand = "ATE")
+#&gt; 
+#&gt; Summary of Balance for All Data:
+#&gt;               Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean
+#&gt; age                 42.0331       39.1574          0.2136     1.1524    0.0438
+#&gt; pre_avg_purch       76.3938       66.0438          0.3962     1.0276    0.1092
+#&gt;               eCDF Max
+#&gt; age             0.0864
+#&gt; pre_avg_purch   0.1545
+#&gt; 
+#&gt; Summary of Balance for Matched Data:
+#&gt;               Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean
+#&gt; age                 40.2869       40.2645          0.0017     1.0001    0.0016
+#&gt; pre_avg_purch       70.5402       70.1875          0.0135     0.9910    0.0044
+#&gt;               eCDF Max Std. Pair Dist.
+#&gt; age             0.0067          0.1224
+#&gt; pre_avg_purch   0.0133          0.1557
+#&gt; 
+#&gt; Sample Sizes:
+#&gt;               Control Treated
+#&gt; All           5768.   4232.  
+#&gt; Matched (ESS) 5527.11 3928.04
+#&gt; Matched       5752.   4199.  
+#&gt; Unmatched       16.     33.  
+#&gt; Discarded        0.      0.</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>df_cem <span class="ot">&lt;-</span> <span class="fu">match.data</span>(cem)</span>
+<span id="cb7-2"><a href="#cb7-2"></a>lm_cem <span class="ot">&lt;-</span> <span class="fu">lm</span>(avg_purch <span class="sc">~</span> card, <span class="at">data =</span> df_cem, <span class="at">weights =</span> weights)</span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="fu">summ</span>(lm_cem)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Observations</td>
+<td style="text-align: right;">9951</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Dependent variable</td>
+<td style="text-align: right;">avg_purch</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Type</td>
+<td style="text-align: right;">OLS linear regression</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">F(1,9949)</td>
+<td style="text-align: right;">616.09</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">R²</td>
+<td style="text-align: right;">0.06</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Adj. R²</td>
+<td style="text-align: right;">0.06</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Est.</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">S.E.</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">t val.</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">(Intercept)</td>
+<td style="text-align: right;">70.05</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">175.30</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">card</td>
+<td style="text-align: right;">15.27</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">24.82</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+</tbody><tfoot>
+<tr class="odd">
+<td style="text-align: left; padding: 0;"><sup></sup> Standard errors: OLS</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+</tfoot>
+
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="nearest-neighbor-matching" class="level2">
+<h2 class="anchored" data-anchor-id="nearest-neighbor-matching">Nearest-Neighbor Matching:</h2>
+<div class="cell" data-hash="07_matching_cache/html/unnamed-chunk-6_75da0e6fe7e792621aa77e9f0becf87f">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>nn <span class="ot">&lt;-</span> <span class="fu">matchit</span>(card <span class="sc">~</span> age <span class="sc">+</span> pre_avg_purch,</span>
+<span id="cb8-2"><a href="#cb8-2"></a>               <span class="at">data =</span> membership, </span>
+<span id="cb8-3"><a href="#cb8-3"></a>               <span class="at">method =</span> <span class="st">'cem'</span>, </span>
+<span id="cb8-4"><a href="#cb8-4"></a>               <span class="at">estimand =</span> <span class="st">'ATE'</span>)</span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="fu">summary</span>(nn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; 
+#&gt; Call:
+#&gt; matchit(formula = card ~ age + pre_avg_purch, data = membership, 
+#&gt;     method = "cem", estimand = "ATE")
+#&gt; 
+#&gt; Summary of Balance for All Data:
+#&gt;               Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean
+#&gt; age                 42.0331       39.1574          0.2136     1.1524    0.0438
+#&gt; pre_avg_purch       76.3938       66.0438          0.3962     1.0276    0.1092
+#&gt;               eCDF Max
+#&gt; age             0.0864
+#&gt; pre_avg_purch   0.1545
+#&gt; 
+#&gt; Summary of Balance for Matched Data:
+#&gt;               Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean
+#&gt; age                 40.2869       40.2645          0.0017     1.0001    0.0016
+#&gt; pre_avg_purch       70.5402       70.1875          0.0135     0.9910    0.0044
+#&gt;               eCDF Max Std. Pair Dist.
+#&gt; age             0.0067          0.1224
+#&gt; pre_avg_purch   0.0133          0.1557
+#&gt; 
+#&gt; Sample Sizes:
+#&gt;               Control Treated
+#&gt; All           5768.   4232.  
+#&gt; Matched (ESS) 5527.11 3928.04
+#&gt; Matched       5752.   4199.  
+#&gt; Unmatched       16.     33.  
+#&gt; Discarded        0.      0.</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>df_nn <span class="ot">&lt;-</span> <span class="fu">match.data</span>(nn)</span>
+<span id="cb10-2"><a href="#cb10-2"></a>lm_nn <span class="ot">&lt;-</span> <span class="fu">lm</span>(avg_purch <span class="sc">~</span> card, <span class="at">data =</span> df_nn, <span class="at">weights =</span> weights)</span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="fu">summ</span>(lm_nn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Observations</td>
+<td style="text-align: right;">9951</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Dependent variable</td>
+<td style="text-align: right;">avg_purch</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Type</td>
+<td style="text-align: right;">OLS linear regression</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">F(1,9949)</td>
+<td style="text-align: right;">616.09</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">R²</td>
+<td style="text-align: right;">0.06</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Adj. R²</td>
+<td style="text-align: right;">0.06</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Est.</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">S.E.</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">t val.</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">(Intercept)</td>
+<td style="text-align: right;">70.05</td>
+<td style="text-align: right;">0.40</td>
+<td style="text-align: right;">175.30</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">card</td>
+<td style="text-align: right;">15.27</td>
+<td style="text-align: right;">0.62</td>
+<td style="text-align: right;">24.82</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+</tbody><tfoot>
+<tr class="odd">
+<td style="text-align: left; padding: 0;"><sup></sup> Standard errors: OLS</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+</tfoot>
+
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="inverse-probability-weighting" class="level2">
+<h2 class="anchored" data-anchor-id="inverse-probability-weighting">Inverse Probability Weighting:</h2>
+<div class="cell" data-hash="07_matching_cache/html/unnamed-chunk-7_d76075e18843dbc561ae5e017ae9350f">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># (1) Propensity scores</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>model_prop <span class="ot">&lt;-</span> <span class="fu">glm</span>(card <span class="sc">~</span> age <span class="sc">+</span> pre_avg_purch,</span>
+<span id="cb11-3"><a href="#cb11-3"></a>                  <span class="at">data =</span> membership,</span>
+<span id="cb11-4"><a href="#cb11-4"></a>                  <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"logit"</span>))</span>
+<span id="cb11-5"><a href="#cb11-5"></a><span class="fu">summary</span>(model_prop)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>#&gt; 
+#&gt; Call:
+#&gt; glm(formula = card ~ age + pre_avg_purch, family = binomial(link = "logit"), 
+#&gt;     data = membership)
+#&gt; 
+#&gt; Coefficients:
+#&gt;                 Estimate Std. Error z value Pr(&gt;|z|)    
+#&gt; (Intercept)   -1.4121735  0.0723729 -19.512   &lt;2e-16 ***
+#&gt; age            0.0011734  0.0017758   0.661    0.509    
+#&gt; pre_avg_purch  0.0148181  0.0009263  15.996   &lt;2e-16 ***
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; 
+#&gt; (Dispersion parameter for binomial family taken to be 1)
+#&gt; 
+#&gt;     Null deviance: 13626  on 9999  degrees of freedom
+#&gt; Residual deviance: 13250  on 9997  degrees of freedom
+#&gt; AIC: 13256
+#&gt; 
+#&gt; Number of Fisher Scoring iterations: 4</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="co"># Add propensities to table</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a>membership_aug <span class="ot">&lt;-</span> membership <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">propensity =</span> <span class="fu">predict</span>(model_prop, <span class="at">type =</span> <span class="st">"response"</span>))</span>
+<span id="cb13-3"><a href="#cb13-3"></a></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="co"># Extend data by IPW scores</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a>membership_ipw <span class="ot">&lt;-</span> membership_aug <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(</span>
+<span id="cb13-6"><a href="#cb13-6"></a>  <span class="at">ipw =</span> (card<span class="sc">/</span>propensity) <span class="sc">+</span> ((<span class="dv">1</span><span class="sc">-</span>card) <span class="sc">/</span> (<span class="dv">1</span><span class="sc">-</span>propensity)))</span>
+<span id="cb13-7"><a href="#cb13-7"></a></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="co"># Run with high weights excluded</span></span>
+<span id="cb13-9"><a href="#cb13-9"></a>lm_ipw <span class="ot">&lt;-</span> <span class="fu">lm</span>(avg_purch <span class="sc">~</span> card,</span>
+<span id="cb13-10"><a href="#cb13-10"></a>                <span class="at">data =</span> membership_ipw <span class="sc">%&gt;%</span> <span class="fu">filter</span>(propensity <span class="sc">%&gt;%</span> <span class="fu">between</span>(<span class="fl">0.15</span>, <span class="fl">0.85</span>)),</span>
+<span id="cb13-11"><a href="#cb13-11"></a>                <span class="at">weights =</span> ipw)</span>
+<span id="cb13-12"><a href="#cb13-12"></a><span class="fu">summ</span>(lm_ipw)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Observations</td>
+<td style="text-align: right;">10000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">Dependent variable</td>
+<td style="text-align: right;">avg_purch</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Type</td>
+<td style="text-align: right;">OLS linear regression</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">F(1,9998)</td>
+<td style="text-align: right;">599.18</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">R²</td>
+<td style="text-align: right;">0.06</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">Adj. R²</td>
+<td style="text-align: right;">0.06</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Est.</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">S.E.</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">t val.</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">p</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left; font-weight: bold;">(Intercept)</td>
+<td style="text-align: right;">70.26</td>
+<td style="text-align: right;">0.43</td>
+<td style="text-align: right;">162.65</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold;">card</td>
+<td style="text-align: right;">14.95</td>
+<td style="text-align: right;">0.61</td>
+<td style="text-align: right;">24.48</td>
+<td style="text-align: right;">0.00</td>
+</tr>
+</tbody><tfoot>
+<tr class="odd">
+<td style="text-align: left; padding: 0;"><sup></sup> Standard errors: OLS</td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+<td style="text-align: right;"></td>
+</tr>
+</tfoot>
+
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<div class="cell" data-hash="07_matching_cache/html/unnamed-chunk-8_c3781552bd5d2405f2c13227dc48db8d">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>modelsummary<span class="sc">::</span><span class="fu">modelsummary</span>(<span class="fu">list</span>(<span class="st">"Naive"</span> <span class="ot">=</span> lm_naive,</span>
+<span id="cb14-2"><a href="#cb14-2"></a>                                <span class="st">"CEM1"</span>  <span class="ot">=</span> lm_cem,</span>
+<span id="cb14-3"><a href="#cb14-3"></a>                                <span class="st">"NN"</span>    <span class="ot">=</span> lm_nn,</span>
+<span id="cb14-4"><a href="#cb14-4"></a>                                <span class="st">"IPW1"</span>  <span class="ot">=</span> lm_ipw))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th"></th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Naive</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">CEM1</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">NN</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">&nbsp;IPW1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: center;">65.940</td>
+<td style="text-align: center;">70.047</td>
+<td style="text-align: center;">70.047</td>
+<td style="text-align: center;">70.263</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+<td style="text-align: center;">(0.397)</td>
+<td style="text-align: center;">(0.400)</td>
+<td style="text-align: center;">(0.400)</td>
+<td style="text-align: center;">(0.432)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">card</td>
+<td style="text-align: center;">25.220</td>
+<td style="text-align: center;">15.269</td>
+<td style="text-align: center;">15.269</td>
+<td style="text-align: center;">14.955</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; box-shadow: 0px 1.5px;"></td>
+<td style="text-align: center; box-shadow: 0px 1.5px;">(0.610)</td>
+<td style="text-align: center; box-shadow: 0px 1.5px;">(0.615)</td>
+<td style="text-align: center; box-shadow: 0px 1.5px;">(0.615)</td>
+<td style="text-align: center; box-shadow: 0px 1.5px;">(0.611)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Num.Obs.</td>
+<td style="text-align: center;">10000</td>
+<td style="text-align: center;">9951</td>
+<td style="text-align: center;">9951</td>
+<td style="text-align: center;">10000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">R2</td>
+<td style="text-align: center;">0.146</td>
+<td style="text-align: center;">0.058</td>
+<td style="text-align: center;">0.058</td>
+<td style="text-align: center;">0.057</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">R2 Adj.</td>
+<td style="text-align: center;">0.146</td>
+<td style="text-align: center;">0.058</td>
+<td style="text-align: center;">0.058</td>
+<td style="text-align: center;">0.056</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AIC</td>
+<td style="text-align: center;">96483.2</td>
+<td style="text-align: center;">96352.4</td>
+<td style="text-align: center;">96352.4</td>
+<td style="text-align: center;">97072.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BIC</td>
+<td style="text-align: center;">96504.8</td>
+<td style="text-align: center;">96374.0</td>
+<td style="text-align: center;">96374.0</td>
+<td style="text-align: center;">97094.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Log.Lik.</td>
+<td style="text-align: center;">−48238.590</td>
+<td style="text-align: center;">−48173.187</td>
+<td style="text-align: center;">−48173.187</td>
+<td style="text-align: center;">−48533.447</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RMSE</td>
+<td style="text-align: center;">30.11</td>
+<td style="text-align: center;">30.27</td>
+<td style="text-align: center;">30.27</td>
+<td style="text-align: center;">30.54</td>
+</tr>
+</tbody>
+</table>
+
+
 </div>
 </div>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -542,6 +1244,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"descPosition":"bottom","selector":".lightbox","loop":true,"closeEffect":"zoom","openEffect":"zoom"});</script>
 
 
 
