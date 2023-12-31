@@ -109,7 +109,7 @@
     "href": "content/01_journal/06_rct.html",
     "title": "Randomized Controlled Trials",
     "section": "",
-    "text": "Note\n\n\n\nYou can delete everything in here and start fresh."
+    "text": "Code\n#Load data set and libraries\nlibrary(ggplot2)\nlibrary(jtools)\nlibrary(kableExtra)\nabtest_online &lt;- readRDS(\"../../../Causal_Data_Science_Data/abtest_online.rds\")"
   },
   {
     "objectID": "content/01_journal/08_did.html",
@@ -124,5 +124,19 @@
     "title": "Regression Discontinuity",
     "section": "",
     "text": "Note\n\n\n\nYou can delete everything in here and start fresh."
+  },
+  {
+    "objectID": "content/01_journal/06_rct.html#previous-site-visits",
+    "href": "content/01_journal/06_rct.html#previous-site-visits",
+    "title": "Randomized Controlled Trials",
+    "section": "Previous site visits",
+    "text": "Previous site visits\nAs shown below, we can see that both groups look pretty similar, i.e. balanced with respect to previous site visits.\n\n\nCode\ncompare_visits &lt;- \n  ggplot(abtest_online, \n         aes(x = chatbot, \n             y = previous_visit, \n             color = as.factor(chatbot))) +\n  geom_boxplot(width=0.3, fill=\"white\")+\n  stat_boxplot(geom = 'errorbar', width = 0.4)+\n  labs(x = \"Chatbot acitve\", y = \"Previous visits\", title = 'Previous site visit balance')+\n  theme_minimal()+\n  theme(legend.position = \"none\")\ncompare_visits"
+  },
+  {
+    "objectID": "content/01_journal/06_rct.html#mobile-device-usage",
+    "href": "content/01_journal/06_rct.html#mobile-device-usage",
+    "title": "Randomized Controlled Trials",
+    "section": "Mobile device usage",
+    "text": "Mobile device usage\nAs the mobile device usage variable is a boolean, we can only compare the ratio of mobile device across both groups. Again, both groups seem balanced.\n\n\nCode\n#Calculate mobile device usage for each group\nmbu_aggregate=aggregate(abtest_online$mobile_device,by=list(abtest_online$chatbot),FUN=mean)\nnames(mbu_aggregate)&lt;-c('chatbot', 'mobile_device')\n\ncompare_device &lt;- \n  ggplot(mbu_aggregate, \n         aes(x = chatbot, \n             y = mobile_device, \n             color = as.factor(chatbot))) +\n  geom_boxplot(width=0.3, fill=\"white\")+\n  labs(x = \"Chatbot acitve\", y = \"Previous visits\", title = 'Mobile device usage balance')+\n  ylim(0,1)+\n  theme_minimal()+\n  theme(legend.position = \"none\")\ncompare_device"
   }
 ]
