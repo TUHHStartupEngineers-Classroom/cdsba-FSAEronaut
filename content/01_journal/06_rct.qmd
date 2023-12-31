@@ -1,7 +1,95 @@
 ---
 title: "Randomized Controlled Trials"
+author: "Lucas Rousselange"
+execute:
+  warning: false
+format:
+  html:
+    code-fold: true
+number-sections: false
 ---
 
-::: callout-note
-You can delete everything in here and start fresh.
-:::
+```{r}
+#Load data set and libraries
+library(ggplot2)
+library(jtools)
+library(kableExtra)
+abtest_online <- readRDS("../../../Causal_Data_Science_Data/abtest_online.rds")
+```
+
+
+# Task 1
+The covariates for which we need to check the balance are: 
+
+* Previous site visits 
+* Mobile device usage
+
+## Previous site visits
+As shown below, we can see that both groups look pretty similar, i.e. balanced with respect to previous site visits.
+```{r}
+compare_visits <- 
+  ggplot(abtest_online, 
+         aes(x = chatbot, 
+             y = previous_visit, 
+             color = as.factor(chatbot))) +
+  geom_boxplot(width=0.3, fill="white")+
+  stat_boxplot(geom = 'errorbar', width = 0.4)+
+  labs(x = "Chatbot acitve", y = "Previous visits", title = 'Previous site visit balance')+
+  theme_minimal()+
+  theme(legend.position = "none")
+compare_visits
+```
+
+## Mobile device usage
+As the mobile device usage variable is a boolean, we can only compare the ratio of mobile device across both groups. Again, both groups seem balanced.
+```{r}
+#Calculate mobile device usage for each group
+mbu_aggregate=aggregate(abtest_online$mobile_device,by=list(abtest_online$chatbot),FUN=mean)
+names(mbu_aggregate)<-c('chatbot', 'mobile_device')
+
+compare_device <- 
+  ggplot(mbu_aggregate, 
+         aes(x = chatbot, 
+             y = mobile_device, 
+             color = as.factor(chatbot))) +
+  geom_boxplot(width=0.3, fill="white")+
+  labs(x = "Chatbot acitve", y = "Previous visits", title = 'Mobile device usage balance')+
+  ylim(0,1)+
+  theme_minimal()+
+  theme(legend.position = "none")
+compare_device
+```
+
+
+# Task 2
+The result of the regression is shown below:
+
+```{r}
+reg <- lm(purchase_amount ~ chatbot, abtest_online)
+summ(reg)
+``` 
+
+As we can see, the chatbot has a significative negative result on the average purchase amount, albeit the fit being pretty poor.
+
+```{r}
+effect_plot(reg, chatbot)+
+  labs(x = "Chatbot acitve", y = "Purchase amount", title = 'Average customer purchase amount')+
+  expand_limits(y=0)
+```
+
+
+# Task 3 
+If we account for previous visits and mobile device usage, we can see that the results of our AB test changed significantly. 
+```{r}
+reg_cate <- lm(purchase_amount ~ chatbot*mobile_device + chatbot*previous_visit, abtest_online)
+summ(reg_cate)
+``` 
+# Task 4
+Running a binomial regression for the effect of the chatbot on the purchase behavior of the customer, shows it has a significative negative impact on the average purchase rate.
+```{r}
+reg_log <- glm(purchase ~ chatbot, family=binomial(link='logit'), abtest_online)
+summ(reg_log)
+effect_plot(reg_log, chatbot)+
+  labs(x = "Chatbot acitve", y = "Purchase rate", title = 'Average customer purchase rate')+
+  ylim(0,1)
+``` 
