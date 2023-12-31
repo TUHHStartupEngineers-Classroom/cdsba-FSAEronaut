@@ -1,7 +1,136 @@
 ---
 title: "Matching and Subclassification"
+author: "Lucas Rousselange"
+execute:
+  warning: false
+format:
+  html:
+    code-fold: true
+number-sections: false
 ---
 
-::: callout-note
-You can delete everything in here and start fresh.
-:::
+```{r}
+#Load data set and libraries
+library(ggplot2)
+library(tidyverse)
+library(RColorBrewer)
+library(dagitty)
+library(ggdag)
+library(jtools)
+library(kableExtra)
+library(MatchIt)
+membership <- readRDS("../../../Causal_Data_Science_Data/membership.rds")
+```
+
+# Task 1
+## Exploring the relationships
+
+Plotting a heat map for the available factors, there seems to be a high correlation between age, average purchase and pre membership average purchase.The pre membership average purchase, age and membership card also seem correlated. The sex seems to not have a big influence on either variable.
+```{r}
+mem_cor <- as.data.frame(cor(membership))
+mem_heat <- mem_cor %>%
+  rownames_to_column() %>%
+  gather(colname, value, -rowname)
+
+ggplot(mem_heat, aes(x=colname,y=rowname, fill=value)) + 
+  geom_tile(color='black')+
+  scale_fill_gradient(low = "white", high = 'blue4')+
+  geom_text(aes(label = round(value,2)), color = "black", size = 4) +
+  labs(x='', y='', title = 'Heatmap correlation between variables')
+  
+```
+## DAG
+
+```{r}
+# Confounder
+confounding <- dagify(
+  X ~ Z1,
+  Y ~ Z1,
+  Y ~ X,
+  X ~ Z2,
+  Y ~ Z2,
+  Z2 ~ Z1,
+  coords = list(x = c(Y = 3, Z1 = 1, X = 1, Z2=3),
+                y = c(Y = 0, Z1 = 1, X = 0, Z2 =1)),
+  labels = list(Z2 = "pre_avg_purch",
+                Y = "avg_purch",
+                Z1 = "age",
+                X= 'card')
+  )
+
+
+p <- ggdag(confounding) +
+  geom_dag_point(color = "#15c1d4") +
+  geom_dag_text(color = "white") +
+  geom_dag_edges(edge_color = "black") +
+  geom_dag_label_repel(aes(label = label))+
+  theme_dag_blank()
+p
+
+```
+
+# Task 2
+Naive model: 
+```{r}
+lm_naive <- lm(avg_purch ~ card, data = membership)
+summ(lm_naive)
+```
+
+# Task 3
+## (Coarsened) Exact Matching: 
+
+```{r}
+cem <- matchit(card ~ age + pre_avg_purch,
+               data = membership, 
+               method = 'cem', 
+               estimand = 'ATE')
+summary(cem)
+
+df_cem <- match.data(cem)
+lm_cem <- lm(avg_purch ~ card, data = df_cem, weights = weights)
+summ(lm_cem)
+```
+
+
+## Nearest-Neighbor Matching: 
+```{r}
+nn <- matchit(card ~ age + pre_avg_purch,
+               data = membership, 
+               method = 'cem', 
+               estimand = 'ATE')
+summary(nn)
+
+df_nn <- match.data(nn)
+lm_nn <- lm(avg_purch ~ card, data = df_nn, weights = weights)
+summ(lm_nn)
+```
+
+## Inverse Probability Weighting: 
+```{r}
+# (1) Propensity scores
+model_prop <- glm(card ~ age + pre_avg_purch,
+                  data = membership,
+                  family = binomial(link = "logit"))
+summary(model_prop)
+
+# Add propensities to table
+membership_aug <- membership %>% mutate(propensity = predict(model_prop, type = "response"))
+
+# Extend data by IPW scores
+membership_ipw <- membership_aug %>% mutate(
+  ipw = (card/propensity) + ((1-card) / (1-propensity)))
+
+# Run with high weights excluded
+lm_ipw <- lm(avg_purch ~ card,
+                data = membership_ipw %>% filter(propensity %>% between(0.15, 0.85)),
+                weights = ipw)
+summ(lm_ipw)
+```
+
+## Summary
+```{r}
+modelsummary::modelsummary(list("Naive" = lm_naive,
+                                "CEM1"  = lm_cem,
+                                "NN"    = lm_nn,
+                                "IPW1"  = lm_ipw))
+```

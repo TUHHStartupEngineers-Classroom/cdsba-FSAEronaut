@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "My Lab Journal",
     "section": "",
-    "text": "This is the Lab Journal of Lucas Rousselange for the CDSfBA course in the WiSe2024.\n\n[Status]: [ 50%]"
+    "text": "This is the Lab Journal of Lucas Rousselange for the CDSfBA course in the WiSe2024.\n\n[Status]: [ 70%]"
   },
   {
     "objectID": "content/01_journal/09_iv.html",
@@ -18,7 +18,49 @@
     "href": "content/01_journal/07_matching.html",
     "title": "Matching and Subclassification",
     "section": "",
-    "text": "Note\n\n\n\nYou can delete everything in here and start fresh."
+    "text": "Code\n#Load data set and libraries\nlibrary(ggplot2)\nlibrary(tidyverse)\nlibrary(RColorBrewer)\nlibrary(dagitty)\nlibrary(ggdag)\nlibrary(jtools)\nlibrary(kableExtra)\nlibrary(MatchIt)\nmembership &lt;- readRDS(\"../../../Causal_Data_Science_Data/membership.rds\")"
+  },
+  {
+    "objectID": "content/01_journal/07_matching.html#exploring-the-relationships",
+    "href": "content/01_journal/07_matching.html#exploring-the-relationships",
+    "title": "Matching and Subclassification",
+    "section": "Exploring the relationships",
+    "text": "Exploring the relationships\nPlotting a heat map for the available factors, there seems to be a high correlation between age, average purchase and pre membership average purchase.The pre membership average purchase, age and membership card also seem correlated. The sex seems to not have a big influence on either variable.\n\n\nCode\nmem_cor &lt;- as.data.frame(cor(membership))\nmem_heat &lt;- mem_cor %&gt;%\n  rownames_to_column() %&gt;%\n  gather(colname, value, -rowname)\n\nggplot(mem_heat, aes(x=colname,y=rowname, fill=value)) + \n  geom_tile(color='black')+\n  scale_fill_gradient(low = \"white\", high = 'blue4')+\n  geom_text(aes(label = round(value,2)), color = \"black\", size = 4) +\n  labs(x='', y='', title = 'Heatmap correlation between variables')"
+  },
+  {
+    "objectID": "content/01_journal/07_matching.html#dag",
+    "href": "content/01_journal/07_matching.html#dag",
+    "title": "Matching and Subclassification",
+    "section": "DAG",
+    "text": "DAG\n\n\nCode\n# Confounder\nconfounding &lt;- dagify(\n  X ~ Z1,\n  Y ~ Z1,\n  Y ~ X,\n  X ~ Z2,\n  Y ~ Z2,\n  Z2 ~ Z1,\n  coords = list(x = c(Y = 3, Z1 = 1, X = 1, Z2=3),\n                y = c(Y = 0, Z1 = 1, X = 0, Z2 =1)),\n  labels = list(Z2 = \"pre_avg_purch\",\n                Y = \"avg_purch\",\n                Z1 = \"age\",\n                X= 'card')\n  )\n\n\np &lt;- ggdag(confounding) +\n  geom_dag_point(color = \"#15c1d4\") +\n  geom_dag_text(color = \"white\") +\n  geom_dag_edges(edge_color = \"black\") +\n  geom_dag_label_repel(aes(label = label))+\n  theme_dag_blank()\np"
+  },
+  {
+    "objectID": "content/01_journal/07_matching.html#coarsened-exact-matching",
+    "href": "content/01_journal/07_matching.html#coarsened-exact-matching",
+    "title": "Matching and Subclassification",
+    "section": "(Coarsened) Exact Matching:",
+    "text": "(Coarsened) Exact Matching:\n\n\nCode\ncem &lt;- matchit(card ~ age + pre_avg_purch,\n               data = membership, \n               method = 'cem', \n               estimand = 'ATE')\nsummary(cem)\n\n\n#&gt; \n#&gt; Call:\n#&gt; matchit(formula = card ~ age + pre_avg_purch, data = membership, \n#&gt;     method = \"cem\", estimand = \"ATE\")\n#&gt; \n#&gt; Summary of Balance for All Data:\n#&gt;               Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean\n#&gt; age                 42.0331       39.1574          0.2136     1.1524    0.0438\n#&gt; pre_avg_purch       76.3938       66.0438          0.3962     1.0276    0.1092\n#&gt;               eCDF Max\n#&gt; age             0.0864\n#&gt; pre_avg_purch   0.1545\n#&gt; \n#&gt; Summary of Balance for Matched Data:\n#&gt;               Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean\n#&gt; age                 40.2869       40.2645          0.0017     1.0001    0.0016\n#&gt; pre_avg_purch       70.5402       70.1875          0.0135     0.9910    0.0044\n#&gt;               eCDF Max Std. Pair Dist.\n#&gt; age             0.0067          0.1224\n#&gt; pre_avg_purch   0.0133          0.1557\n#&gt; \n#&gt; Sample Sizes:\n#&gt;               Control Treated\n#&gt; All           5768.   4232.  \n#&gt; Matched (ESS) 5527.11 3928.04\n#&gt; Matched       5752.   4199.  \n#&gt; Unmatched       16.     33.  \n#&gt; Discarded        0.      0.\n\n\nCode\ndf_cem &lt;- match.data(cem)\nlm_cem &lt;- lm(avg_purch ~ card, data = df_cem, weights = weights)\nsumm(lm_cem)\n\n\n\n\n\n\nObservations\n9951\n\n\nDependent variable\navg_purch\n\n\nType\nOLS linear regression\n\n\n\n\n\n\n\n\nF(1,9949)\n616.09\n\n\nR²\n0.06\n\n\nAdj. R²\n0.06\n\n\n\n\n\n\n\n\n\nEst.\nS.E.\nt val.\np\n\n\n\n\n(Intercept)\n70.05\n0.40\n175.30\n0.00\n\n\ncard\n15.27\n0.62\n24.82\n0.00\n\n\n\n Standard errors: OLS"
+  },
+  {
+    "objectID": "content/01_journal/07_matching.html#nearest-neighbor-matching",
+    "href": "content/01_journal/07_matching.html#nearest-neighbor-matching",
+    "title": "Matching and Subclassification",
+    "section": "Nearest-Neighbor Matching:",
+    "text": "Nearest-Neighbor Matching:\n\n\nCode\nnn &lt;- matchit(card ~ age + pre_avg_purch,\n               data = membership, \n               method = 'cem', \n               estimand = 'ATE')\nsummary(nn)\n\n\n#&gt; \n#&gt; Call:\n#&gt; matchit(formula = card ~ age + pre_avg_purch, data = membership, \n#&gt;     method = \"cem\", estimand = \"ATE\")\n#&gt; \n#&gt; Summary of Balance for All Data:\n#&gt;               Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean\n#&gt; age                 42.0331       39.1574          0.2136     1.1524    0.0438\n#&gt; pre_avg_purch       76.3938       66.0438          0.3962     1.0276    0.1092\n#&gt;               eCDF Max\n#&gt; age             0.0864\n#&gt; pre_avg_purch   0.1545\n#&gt; \n#&gt; Summary of Balance for Matched Data:\n#&gt;               Means Treated Means Control Std. Mean Diff. Var. Ratio eCDF Mean\n#&gt; age                 40.2869       40.2645          0.0017     1.0001    0.0016\n#&gt; pre_avg_purch       70.5402       70.1875          0.0135     0.9910    0.0044\n#&gt;               eCDF Max Std. Pair Dist.\n#&gt; age             0.0067          0.1224\n#&gt; pre_avg_purch   0.0133          0.1557\n#&gt; \n#&gt; Sample Sizes:\n#&gt;               Control Treated\n#&gt; All           5768.   4232.  \n#&gt; Matched (ESS) 5527.11 3928.04\n#&gt; Matched       5752.   4199.  \n#&gt; Unmatched       16.     33.  \n#&gt; Discarded        0.      0.\n\n\nCode\ndf_nn &lt;- match.data(nn)\nlm_nn &lt;- lm(avg_purch ~ card, data = df_nn, weights = weights)\nsumm(lm_nn)\n\n\n\n\n\n\nObservations\n9951\n\n\nDependent variable\navg_purch\n\n\nType\nOLS linear regression\n\n\n\n\n\n\n\n\nF(1,9949)\n616.09\n\n\nR²\n0.06\n\n\nAdj. R²\n0.06\n\n\n\n\n\n\n\n\n\nEst.\nS.E.\nt val.\np\n\n\n\n\n(Intercept)\n70.05\n0.40\n175.30\n0.00\n\n\ncard\n15.27\n0.62\n24.82\n0.00\n\n\n\n Standard errors: OLS"
+  },
+  {
+    "objectID": "content/01_journal/07_matching.html#inverse-probability-weighting",
+    "href": "content/01_journal/07_matching.html#inverse-probability-weighting",
+    "title": "Matching and Subclassification",
+    "section": "Inverse Probability Weighting:",
+    "text": "Inverse Probability Weighting:\n\n\nCode\n# (1) Propensity scores\nmodel_prop &lt;- glm(card ~ age + pre_avg_purch,\n                  data = membership,\n                  family = binomial(link = \"logit\"))\nsummary(model_prop)\n\n\n#&gt; \n#&gt; Call:\n#&gt; glm(formula = card ~ age + pre_avg_purch, family = binomial(link = \"logit\"), \n#&gt;     data = membership)\n#&gt; \n#&gt; Coefficients:\n#&gt;                 Estimate Std. Error z value Pr(&gt;|z|)    \n#&gt; (Intercept)   -1.4121735  0.0723729 -19.512   &lt;2e-16 ***\n#&gt; age            0.0011734  0.0017758   0.661    0.509    \n#&gt; pre_avg_purch  0.0148181  0.0009263  15.996   &lt;2e-16 ***\n#&gt; ---\n#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1\n#&gt; \n#&gt; (Dispersion parameter for binomial family taken to be 1)\n#&gt; \n#&gt;     Null deviance: 13626  on 9999  degrees of freedom\n#&gt; Residual deviance: 13250  on 9997  degrees of freedom\n#&gt; AIC: 13256\n#&gt; \n#&gt; Number of Fisher Scoring iterations: 4\n\n\nCode\n# Add propensities to table\nmembership_aug &lt;- membership %&gt;% mutate(propensity = predict(model_prop, type = \"response\"))\n\n# Extend data by IPW scores\nmembership_ipw &lt;- membership_aug %&gt;% mutate(\n  ipw = (card/propensity) + ((1-card) / (1-propensity)))\n\n# Run with high weights excluded\nlm_ipw &lt;- lm(avg_purch ~ card,\n                data = membership_ipw %&gt;% filter(propensity %&gt;% between(0.15, 0.85)),\n                weights = ipw)\nsumm(lm_ipw)\n\n\n\n\n\n\nObservations\n10000\n\n\nDependent variable\navg_purch\n\n\nType\nOLS linear regression\n\n\n\n\n\n\n\n\nF(1,9998)\n599.18\n\n\nR²\n0.06\n\n\nAdj. R²\n0.06\n\n\n\n\n\n\n\n\n\nEst.\nS.E.\nt val.\np\n\n\n\n\n(Intercept)\n70.26\n0.43\n162.65\n0.00\n\n\ncard\n14.95\n0.61\n24.48\n0.00\n\n\n\n Standard errors: OLS"
+  },
+  {
+    "objectID": "content/01_journal/07_matching.html#summary",
+    "href": "content/01_journal/07_matching.html#summary",
+    "title": "Matching and Subclassification",
+    "section": "Summary",
+    "text": "Summary\n\n\nCode\nmodelsummary::modelsummary(list(\"Naive\" = lm_naive,\n                                \"CEM1\"  = lm_cem,\n                                \"NN\"    = lm_nn,\n                                \"IPW1\"  = lm_ipw))\n\n\n\n\n\n\nNaive\nCEM1\nNN\n IPW1\n\n\n\n\n(Intercept)\n65.940\n70.047\n70.047\n70.263\n\n\n\n(0.397)\n(0.400)\n(0.400)\n(0.432)\n\n\ncard\n25.220\n15.269\n15.269\n14.955\n\n\n\n(0.610)\n(0.615)\n(0.615)\n(0.611)\n\n\nNum.Obs.\n10000\n9951\n9951\n10000\n\n\nR2\n0.146\n0.058\n0.058\n0.057\n\n\nR2 Adj.\n0.146\n0.058\n0.058\n0.056\n\n\nAIC\n96483.2\n96352.4\n96352.4\n97072.9\n\n\nBIC\n96504.8\n96374.0\n96374.0\n97094.5\n\n\nLog.Lik.\n−48238.590\n−48173.187\n−48173.187\n−48533.447\n\n\nRMSE\n30.11\n30.27\n30.27\n30.54"
   },
   {
     "objectID": "content/01_journal/05_dag.html",
@@ -112,20 +154,6 @@
     "text": "Code\n#Load data set and libraries\nlibrary(ggplot2)\nlibrary(jtools)\nlibrary(kableExtra)\nabtest_online &lt;- readRDS(\"../../../Causal_Data_Science_Data/abtest_online.rds\")"
   },
   {
-    "objectID": "content/01_journal/08_did.html",
-    "href": "content/01_journal/08_did.html",
-    "title": "Difference-in-Differences",
-    "section": "",
-    "text": "Note\n\n\n\nYou can delete everything in here and start fresh."
-  },
-  {
-    "objectID": "content/01_journal/10_rdd.html",
-    "href": "content/01_journal/10_rdd.html",
-    "title": "Regression Discontinuity",
-    "section": "",
-    "text": "Note\n\n\n\nYou can delete everything in here and start fresh."
-  },
-  {
     "objectID": "content/01_journal/06_rct.html#previous-site-visits",
     "href": "content/01_journal/06_rct.html#previous-site-visits",
     "title": "Randomized Controlled Trials",
@@ -138,5 +166,19 @@
     "title": "Randomized Controlled Trials",
     "section": "Mobile device usage",
     "text": "Mobile device usage\nAs the mobile device usage variable is a boolean, we can only compare the ratio of mobile device across both groups. Again, both groups seem balanced.\n\n\nCode\n#Calculate mobile device usage for each group\nmbu_aggregate=aggregate(abtest_online$mobile_device,by=list(abtest_online$chatbot),FUN=mean)\nnames(mbu_aggregate)&lt;-c('chatbot', 'mobile_device')\n\ncompare_device &lt;- \n  ggplot(mbu_aggregate, \n         aes(x = chatbot, \n             y = mobile_device, \n             color = as.factor(chatbot))) +\n  geom_boxplot(width=0.3, fill=\"white\")+\n  labs(x = \"Chatbot acitve\", y = \"Previous visits\", title = 'Mobile device usage balance')+\n  ylim(0,1)+\n  theme_minimal()+\n  theme(legend.position = \"none\")\ncompare_device"
+  },
+  {
+    "objectID": "content/01_journal/08_did.html",
+    "href": "content/01_journal/08_did.html",
+    "title": "Difference-in-Differences",
+    "section": "",
+    "text": "Note\n\n\n\nYou can delete everything in here and start fresh."
+  },
+  {
+    "objectID": "content/01_journal/10_rdd.html",
+    "href": "content/01_journal/10_rdd.html",
+    "title": "Regression Discontinuity",
+    "section": "",
+    "text": "Note\n\n\n\nYou can delete everything in here and start fresh."
   }
 ]
